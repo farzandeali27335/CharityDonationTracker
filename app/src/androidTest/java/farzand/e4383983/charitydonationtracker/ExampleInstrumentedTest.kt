@@ -1,4 +1,4 @@
-package farzand.app.charitydonationtracker
+package farzand.e4383983.charitydonationtracker
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

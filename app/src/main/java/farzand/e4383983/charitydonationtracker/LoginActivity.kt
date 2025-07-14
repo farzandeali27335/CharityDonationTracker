@@ -1,13 +1,13 @@
-package farzand.app.charitydonationtracker
+package farzand.e4383983.charitydonationtracker
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,8 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.database.FirebaseDatabase
 
 class LoginActivity : ComponentActivity() {
 
@@ -116,6 +115,14 @@ fun LoginScreen() {
                         Toast.makeText(context, " Please Enter Password", Toast.LENGTH_SHORT).show()
                     }
                     else -> {
+                        val userData = UserData(
+                            "",
+                            email,
+                            "",
+                            password
+                        )
+
+                        userSignIn(userData, context)
 //                        signInWithuseremail(email, password, context)
                     }
 
@@ -144,8 +151,8 @@ fun LoginScreen() {
                 text = "Register Now",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Black),
                 modifier = Modifier.clickable {
-//                    context.startActivity(Intent(context, RegisterActivity::class.java))
-//                    context.finish()
+                    context.startActivity(Intent(context, RegisterActivity::class.java))
+                    context.finish()
                 }
             )
 
@@ -156,6 +163,50 @@ fun LoginScreen() {
     }
 
 }
+
+fun userSignIn(userData: UserData, context: Context) {
+
+    val firebaseDatabase = FirebaseDatabase.getInstance()
+    val databaseReference =
+        firebaseDatabase.getReference("UserData").child(userData.emailid.replace(".", ","))
+
+    databaseReference.get().addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            val dbData = task.result?.getValue(UserData::class.java)
+            if (dbData != null) {
+                if (dbData.password == userData.password) {
+//                    QRCodeGeneratorData.writeLS(context, true)
+//                    QRCodeGeneratorData.writeMail(context, dbData.emailid)
+//                    QRCodeGeneratorData.writeUserName(context, dbData.name)
+
+                    Toast.makeText(context, "Login Successfully", Toast.LENGTH_SHORT).show()
+
+//                    context.startActivity(Intent(context, HomeActivity::class.java))
+//                    (context as Activity).finish()
+                } else {
+                    Toast.makeText(context, "Seems Incorrect Credentials", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            } else {
+                Toast.makeText(context, "Your account not found", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(
+                context,
+                "Something went wrong",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+    }
+}
+
+data class UserData(
+    var name : String = "",
+    var emailid : String = "",
+    var country : String = "",
+    var password: String = ""
+)
 
 
 

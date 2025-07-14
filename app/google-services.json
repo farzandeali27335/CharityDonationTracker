@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "491829727601",
+    "project_id": "charitydonationtracker",
+    "storage_bucket": "charitydonationtracker.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:491829727601:android:8076525a30c3bbbbb3e6d0",
+        "android_client_info": {
+          "package_name": "farzand.e4383983.charitydonationtracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4qzyipRxq3m8XWGfFoZGd6ip_viAaKi0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

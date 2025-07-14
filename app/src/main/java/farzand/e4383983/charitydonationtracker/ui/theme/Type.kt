@@ -1,4 +1,4 @@
-package farzand.app.charitydonationtracker.ui.theme
+package farzand.e4383983.charitydonationtracker.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

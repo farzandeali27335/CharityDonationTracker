@@ -1,4 +1,4 @@
-package farzand.app.charitydonationtracker
+package farzand.e4383983.charitydonationtracker
 
 import org.junit.Test
 

@@ -1,8 +1,11 @@
-package farzand.app.charitydonationtracker
+package farzand.e4383983.charitydonationtracker
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
@@ -35,9 +38,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.google.firebase.database.FirebaseDatabase
 
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -195,6 +199,14 @@ fun RegisterScreen() {
                     else -> {
                         errorMessage = ""
 
+                        val userData = UserData(
+                            fullName,
+                            email,
+                            "UK",
+                            password
+                        )
+                        registerUser(userData,context)
+
                     }
                 }
 
@@ -236,8 +248,6 @@ fun RegisterScreen() {
     }
 }
 
-
-
 fun isValidUsername(username: String): Boolean {
     val regex = "^[a-zA-Z]+$".toRegex()
     return !regex.matches(username)
@@ -246,4 +256,35 @@ fun isValidUsername(username: String): Boolean {
 fun isValidEmail(email: String): Boolean {
     val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
     return !emailRegex.matches(email)
+}
+
+fun registerUser(userData: UserData, context: Context) {
+
+    val firebaseDatabase = FirebaseDatabase.getInstance()
+    val databaseReference = firebaseDatabase.getReference("UserData")
+    databaseReference.child(userData.emailid.replace(".", ","))
+        .setValue(userData)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "You Registered Successfully", Toast.LENGTH_SHORT)
+                    .show()
+
+                context.startActivity(Intent(context, LoginActivity::class.java))
+                (context as Activity).finish()
+
+            } else {
+                Toast.makeText(
+                    context,
+                    "Registration Failed",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        .addOnFailureListener { _ ->
+            Toast.makeText(
+                context,
+                "Something went wrong",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 }
