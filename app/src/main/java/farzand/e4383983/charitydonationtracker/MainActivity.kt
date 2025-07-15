@@ -33,6 +33,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import farzand.e4383983.charitydonationtracker.data.AppDestinations
 import farzand.e4383983.charitydonationtracker.ui.theme.CharityDonationTrackerTheme
 import kotlinx.coroutines.delay
 
@@ -43,11 +48,92 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CharityDonationTrackerTheme{
-                WelComeScreen()
+//                WelComeScreen()
+                MyAppNavGraph()
             }
         }
     }
 }
+
+@Composable
+fun MyAppNavGraph() {
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = AppDestinations.Splash.route // Start with the splash screen
+    ) {
+        // 1. Splash Screen Destination
+        composable(AppDestinations.Splash.route) {
+            SplashScreen(navController = navController)
+        }
+
+        // 2. Login Screen Destination
+        composable(AppDestinations.Login.route) {
+            LoginScreen(
+                onLoginSuccess = {
+                    // Navigate to Home and clear the back stack up to Login (and including it)
+                    navController.navigate(AppDestinations.Home.route) {
+                        popUpTo(AppDestinations.Login.route) {
+                            inclusive = true // Remove Login from back stack
+                        }
+                    }
+                }
+            )
+        }
+
+        // 3. Home Screen Destination
+        composable(AppDestinations.Home.route) {
+            HomeScreenDesign() // Your previously designed home screen
+            // If HomeScreen has navigation out, you'd pass navController to it
+            // For example:
+            // HomeScreenDesign(
+            //     onNavigateToProfile = { navController.navigate(AppDestinations.Profile.route) },
+            //     onNavigateToDonationsHistory = { navController.navigate(AppDestinations.DonationsHistory.route) },
+            //     onNavigateToCampaigns = { navController.navigate(AppDestinations.Campaigns.route) }
+            // )
+        }
+
+        // Add other destinations for your Home Screen options
+        composable(AppDestinations.Profile.route) {
+            // Your Profile Composable
+            Text("Profile Screen") // Placeholder
+        }
+        composable(AppDestinations.DonationsHistory.route) {
+            // Your Donations History Composable
+            Text("Donations History Screen") // Placeholder
+        }
+        composable(AppDestinations.Campaigns.route) {
+            // Your Campaigns Composable
+            Text("Campaigns Screen") // Placeholder
+        }
+    }
+}
+
+/**
+ * WelComeScreen is now refactored as SplashScreen.
+ * It's responsible for displaying the splash and then navigating.
+ */
+@Composable
+fun SplashScreen(navController: NavController) {
+    // No need for mutableStateOf 'showSplash' anymore, LaunchedEffect directly navigates
+    // No need for LocalContext as Activity for navigation
+
+    LaunchedEffect(Unit) {
+        delay(3000) // Delay for 3 seconds
+        // Navigate to the Login screen
+        navController.navigate(AppDestinations.Login.route) {
+            // This pops up to the start destination (Splash) and removes it
+            popUpTo(AppDestinations.Splash.route) {
+                inclusive = true
+            }
+        }
+    }
+
+    WelComeScreenDesign() // Your actual splash screen UI
+}
+
+
 
 @Composable
 fun WelComeScreen() {
@@ -58,12 +144,10 @@ fun WelComeScreen() {
     LaunchedEffect(Unit) {
         delay(3000)
         showSplash = false
-
-
     }
+
     if (showSplash) {
         WelComeScreenDesign()
-
     } else {
         context.startActivity(Intent(context, LoginActivity::class.java))
         context.finish()
@@ -85,10 +169,28 @@ fun WelComeScreenDesign() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+
+
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_logo),
+                contentDescription = "Charity Donation Tracker",
+            )
+
             Text(
-                text = "Farzand e ali",
-                color = Color.White,
-                fontSize = 36.sp,
+                text = "Charity Donation Tracker",
+                color = Color.Black,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+
+            Text(
+                text = " By Farzand e ali",
+                color = Color.Black,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -96,22 +198,6 @@ fun WelComeScreenDesign() {
             )
 
             Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "Charity Donation Tracker",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_logo),
-                contentDescription = "Charity Donation Tracker",
-            )
         }
     }
 

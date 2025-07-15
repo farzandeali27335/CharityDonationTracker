@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -36,8 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.firebase.database.FirebaseDatabase
 
 
@@ -68,8 +73,21 @@ fun RegisterScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = colorResource(id = R.color.PrimaryDark))
             .padding(16.dp)
     ) {
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            text = "Charity Donation Tracker",
+            color = Color.Black,
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -87,7 +105,8 @@ fun RegisterScreen() {
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.AccountCircle, // Replace with desired icon
-                    contentDescription = "Email Icon"
+                    contentDescription = "Email Icon",
+                    tint = colorResource(id = R.color.button_color)
                 )
             },
         )
@@ -125,7 +144,8 @@ fun RegisterScreen() {
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email, // Replace with desired icon
-                    contentDescription = "Email Icon"
+                    contentDescription = "Email Icon",
+                    tint = colorResource(id = R.color.button_color)
                 )
             },
         )
@@ -140,7 +160,8 @@ fun RegisterScreen() {
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock, // Replace with desired icon
-                    contentDescription = "Password Icon"
+                    contentDescription = "Password Icon",
+                    tint = colorResource(id = R.color.button_color)
                 )
             },
         )
@@ -156,7 +177,8 @@ fun RegisterScreen() {
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock, // Replace with desired icon
-                    contentDescription = "Password Icon"
+                    contentDescription = "Password Icon",
+                    tint = colorResource(id = R.color.button_color)
                 )
             },
         )
@@ -215,7 +237,10 @@ fun RegisterScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp, 0.dp),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.button_color)
+            )
         )
         {
             Text("Register")
