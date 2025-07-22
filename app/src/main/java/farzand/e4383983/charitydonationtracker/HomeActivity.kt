@@ -39,7 +39,9 @@ class HomeActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenDesign() {
+fun HomeScreenDesign(
+    onButtonClicked: (buttonType:Int) -> Unit
+) {
     // Load your custom colors
     val primaryDark = colorResource(id = R.color.PrimaryDark)
     val buttonColor = colorResource(id = R.color.button_color)
@@ -88,7 +90,7 @@ fun HomeScreenDesign() {
 
             // Donate Button (Prominent)
             Button(
-                onClick = { /* Handle Donate click */ },
+                onClick = { onButtonClicked.invoke(1) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp),
@@ -118,6 +120,38 @@ fun HomeScreenDesign() {
 
             Spacer(modifier = Modifier.height(8.dp)) // Spacing
 
+            Button(
+                onClick = { onButtonClicked.invoke(3) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
+                shape = RoundedCornerShape(16.dp),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Email, // Changed icon to VolunteerActivism
+                        contentDescription = "Donate Icon",
+                        tint = textOnButton,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        "Donation Summary",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = textOnButton
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp)) // Spacing
+
+
             // Grid for other options
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -129,7 +163,7 @@ fun HomeScreenDesign() {
                     title = "Donations History",
                     icon = Icons.Default.Email, // Changed icon to History
                     iconTint = buttonColor,
-                    onClick = { /* Handle Donations History click */ }
+                    onClick = { onButtonClicked.invoke(2) }
                 )
 
                 // Profile Card
@@ -144,63 +178,63 @@ fun HomeScreenDesign() {
             Spacer(modifier = Modifier.height(8.dp)) // Spacing
 
             // Ongoing Campaigns Section
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = primaryDark),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Email, // Changed icon to Campaign
-                            contentDescription = "Campaigns Icon",
-                            tint = textOnPrimaryDark,
-                            modifier = Modifier.size(28.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            "Ongoing Campaigns",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = textOnPrimaryDark
-                        )
-                    }
-
-                    // Example Campaign Item 1
-                    CampaignItem(
-                        title = "Support Local Schools",
-                        description = "Help us provide essential supplies for underprivileged students.",
-                        progress = 0.75f, // 75% complete
-                        buttonColor = buttonColor
-                    )
-
-                    // Example Campaign Item 2
-                    CampaignItem(
-                        title = "Clean Water Initiative",
-                        description = "Bringing clean and safe drinking water to rural communities.",
-                        progress = 0.40f, // 40% complete
-                        buttonColor = buttonColor
-                    )
-
-                    // Add more CampaignItem as needed
-                    TextButton(onClick = { /* View all campaigns */ }) {
-                        Text("View All Campaigns", color = buttonColor, fontWeight = FontWeight.SemiBold)
-                    }
-                }
-            }
+//            Card(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .wrapContentHeight(),
+//                shape = RoundedCornerShape(16.dp),
+//                colors = CardDefaults.cardColors(containerColor = primaryDark),
+//                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+//            ) {
+//                Column(
+//                    modifier = Modifier
+//                        .padding(16.dp)
+//                        .fillMaxWidth(),
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+//                    verticalArrangement = Arrangement.spacedBy(12.dp)
+//                ) {
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.Center,
+//                        modifier = Modifier.fillMaxWidth()
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.Email, // Changed icon to Campaign
+//                            contentDescription = "Campaigns Icon",
+//                            tint = textOnPrimaryDark,
+//                            modifier = Modifier.size(28.dp)
+//                        )
+//                        Spacer(modifier = Modifier.width(8.dp))
+//                        Text(
+//                            "Ongoing Campaigns",
+//                            fontSize = 20.sp,
+//                            fontWeight = FontWeight.Bold,
+//                            color = textOnPrimaryDark
+//                        )
+//                    }
+//
+//                    // Example Campaign Item 1
+//                    CampaignItem(
+//                        title = "Support Local Schools",
+//                        description = "Help us provide essential supplies for underprivileged students.",
+//                        progress = 0.75f, // 75% complete
+//                        buttonColor = buttonColor
+//                    )
+//
+//                    // Example Campaign Item 2
+//                    CampaignItem(
+//                        title = "Clean Water Initiative",
+//                        description = "Bringing clean and safe drinking water to rural communities.",
+//                        progress = 0.40f, // 40% complete
+//                        buttonColor = buttonColor
+//                    )
+//
+//                    // Add more CampaignItem as needed
+//                    TextButton(onClick = { /* View all campaigns */ }) {
+//                        Text("View All Campaigns", color = buttonColor, fontWeight = FontWeight.SemiBold)
+//                    }
+//                }
+//            }
             Spacer(modifier = Modifier.height(16.dp)) // Add some space at the bottom for scrolling
         }
     }
@@ -295,5 +329,5 @@ fun CampaignItem(
 @Preview(showBackground = true)
 @Composable
 fun PreviewHomeScreenDesign() {
-    HomeScreenDesign()
+//    HomeScreenDesign()
 }

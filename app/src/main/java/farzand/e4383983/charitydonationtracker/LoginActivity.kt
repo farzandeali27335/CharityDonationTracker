@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.database.FirebaseDatabase
+import farzand.e4383983.charitydonationtracker.data.UserDetails
 
 class LoginActivity : ComponentActivity() {
 
@@ -202,6 +203,8 @@ fun userSignIn(userData: UserData, context: Context,onLoginSuccess: () -> Unit) 
 //                    QRCodeGeneratorData.writeMail(context, dbData.emailid)
 //                    QRCodeGeneratorData.writeUserName(context, dbData.name)
 
+                    saveUserDetails(userData, context)
+
                     onLoginSuccess.invoke()
                     Toast.makeText(context, "Login Successfully", Toast.LENGTH_SHORT).show()
 
@@ -224,6 +227,13 @@ fun userSignIn(userData: UserData, context: Context,onLoginSuccess: () -> Unit) 
 
     }
 }
+
+fun saveUserDetails(user: UserData, context: Context) {
+    UserDetails.saveUserLoginStatus(context = context, true)
+    UserDetails.saveName(context, user.name)
+    UserDetails.saveEmail(context, user.emailid)
+}
+
 
 data class UserData(
     var name : String = "",
