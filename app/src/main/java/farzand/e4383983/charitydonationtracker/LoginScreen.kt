@@ -2,12 +2,8 @@ package farzand.e4383983.charitydonationtracker
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -42,25 +38,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.google.firebase.database.FirebaseDatabase
-import farzand.e4383983.charitydonationtracker.data.UserDetails
-
-class LoginActivity : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
-        setContent {
-//            LoginScreen()
-        }
-    }
-}
+import farzand.e4383983.charitydonationtracker.data.AppDestinations
+import farzand.e4383983.charitydonationtracker.data.DonorAccountData
 
 
 @Composable
-fun LoginScreen(
-    onLoginSuccess: () -> Unit
+fun LoginScreen(navController: NavHostController,
+                onLoginSuccess: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -136,7 +122,7 @@ fun LoginScreen(
                         Toast.makeText(context, " Please Enter Password", Toast.LENGTH_SHORT).show()
                     }
                     else -> {
-                        val userData = UserData(
+                        val userData = DonorData(
                             "",
                             email,
                             "",
@@ -144,7 +130,6 @@ fun LoginScreen(
                         )
 
                         userSignIn(userData, context,onLoginSuccess)
-//                        signInWithuseremail(email, password, context)
                     }
 
                 }
@@ -175,8 +160,7 @@ fun LoginScreen(
                 text = "Register Now",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Black),
                 modifier = Modifier.clickable {
-                    context.startActivity(Intent(context, RegisterActivity::class.java))
-                    context.finish()
+                    navController.navigate(AppDestinations.Register.route)
                 }
             )
 
@@ -188,28 +172,20 @@ fun LoginScreen(
 
 }
 
-fun userSignIn(userData: UserData, context: Context,onLoginSuccess: () -> Unit) {
+fun userSignIn(userData: DonorData, context: Context,onLoginSuccess: () -> Unit) {
 
     val firebaseDatabase = FirebaseDatabase.getInstance()
     val databaseReference =
-        firebaseDatabase.getReference("UserData").child(userData.emailid.replace(".", ","))
+        firebaseDatabase.getReference("DonorData").child(userData.emailid.replace(".", ","))
 
     databaseReference.get().addOnCompleteListener { task ->
         if (task.isSuccessful) {
-            val dbData = task.result?.getValue(UserData::class.java)
+            val dbData = task.result?.getValue(DonorData::class.java)
             if (dbData != null) {
                 if (dbData.password == userData.password) {
-//                    QRCodeGeneratorData.writeLS(context, true)
-//                    QRCodeGeneratorData.writeMail(context, dbData.emailid)
-//                    QRCodeGeneratorData.writeUserName(context, dbData.name)
-
-                    saveUserDetails(userData, context)
-
+                    saveUserDetails(dbData, context)
                     onLoginSuccess.invoke()
                     Toast.makeText(context, "Login Successfully", Toast.LENGTH_SHORT).show()
-
-//                    context.startActivity(Intent(context, HomeActivity::class.java))
-//                    (context as Activity).finish()
                 } else {
                     Toast.makeText(context, "Seems Incorrect Credentials", Toast.LENGTH_SHORT)
                         .show()
@@ -228,24 +204,10 @@ fun userSignIn(userData: UserData, context: Context,onLoginSuccess: () -> Unit) 
     }
 }
 
-fun saveUserDetails(user: UserData, context: Context) {
-    UserDetails.saveUserLoginStatus(context = context, true)
-    UserDetails.saveName(context, user.name)
-    UserDetails.saveEmail(context, user.emailid)
-}
+fun saveUserDetails(user: DonorData, context: Context) {
+    DonorAccountData.saveDonorLoginStatus(context = context, true)
+    DonorAccountData.saveDonorName(context, user.fullName)
+    DonorAccountData.saveDonorEmail(context, user.emailid)
+    DonorAccountData.saveDonorProfilePictureBase64(context, user.profileImage)
 
-
-data class UserData(
-    var name : String = "",
-    var emailid : String = "",
-    var country : String = "",
-    var password: String = ""
-)
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-//    LoginScreen()
 }

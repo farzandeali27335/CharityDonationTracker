@@ -1,7 +1,6 @@
 package farzand.e4383983.charitydonationtracker
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,14 +13,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,13 +32,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import farzand.e4383983.charitydonationtracker.data.AppDestinations
-import farzand.e4383983.charitydonationtracker.data.UserDetails
+import farzand.e4383983.charitydonationtracker.data.DonorAccountData
+import farzand.e4383983.charitydonationtracker.donation.AboutUsScreen
 import farzand.e4383983.charitydonationtracker.donation.CampaignDetailScreen
 import farzand.e4383983.charitydonationtracker.donation.CampaignListScreen
 import farzand.e4383983.charitydonationtracker.donation.DonationHistoryScreen
 import farzand.e4383983.charitydonationtracker.donation.DonationSummaryScreen
 import farzand.e4383983.charitydonationtracker.donation.FirebaseManager
-import farzand.e4383983.charitydonationtracker.donation.Screen
+import farzand.e4383983.charitydonationtracker.donation.ProfileScreen
 import farzand.e4383983.charitydonationtracker.ui.theme.CharityDonationTrackerTheme
 import kotlinx.coroutines.delay
 
@@ -54,12 +49,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        firebaseManager = FirebaseManager(this,this) // Initialize FirebaseManager
+        firebaseManager = FirebaseManager(this, this)
 
         enableEdgeToEdge()
         setContent {
-            CharityDonationTrackerTheme{
-//                WelComeScreen()
+            CharityDonationTrackerTheme {
                 MyAppNavGraph(firebaseManager)
             }
         }
@@ -72,57 +66,60 @@ fun MyAppNavGraph(firebaseManager: FirebaseManager) {
 
     NavHost(
         navController = navController,
-        startDestination = AppDestinations.Splash.route // Start with the splash screen
+        startDestination = AppDestinations.Splash.route
     ) {
-        // 1. Splash Screen Destination
         composable(AppDestinations.Splash.route) {
-            // SplashScreen needs navController to navigate to the next screen
             SplashScreen(navController = navController)
         }
 
-        // 2. Login Screen Destination
         composable(AppDestinations.Login.route) {
-            LoginScreen(
+            LoginScreen(navController,
                 onLoginSuccess = {
-                    // Navigate to Home and clear the back stack up to Login (and including it)
                     navController.navigate(AppDestinations.Home.route) {
                         popUpTo(AppDestinations.Login.route) {
-                            inclusive = true // Remove Login from back stack
+                            inclusive = true
                         }
                     }
                 }
             )
         }
 
-        // 3. Home Screen Destination
+        composable(AppDestinations.Register.route) {
+            RegisterScreen(navController)
+        }
+
         composable(AppDestinations.Home.route) {
             HomeScreenDesign(onButtonClicked = { buttonId ->
-                when(buttonId)
-                {
-                    1 -> { // Assuming 1 maps to "Campaign List"
+                when (buttonId) {
+                    1 -> {
                         navController.navigate(Screen.CampaignList.route)
                     }
-                    // Add more cases for other buttons if HomeScreenDesign has them
-                    // For example, if button 2 is for Donation History:
-                     2 -> {
-                         navController.navigate(Screen.DonationHistory.route)
-                     }
+                    2 -> {
+                        navController.navigate(Screen.DonationHistory.route)
+                    }
 
-                    3->{
+                    3 -> {
                         navController.navigate(Screen.DonationSummary.route)
+                    }
+
+                    4 -> {
+                        navController.navigate(Screen.AboutUs.route)
+                    }
+
+                    5 -> {
+                        navController.navigate(Screen.Profile.route)
+
                     }
                 }
             })
         }
 
-        // 4. Campaign List Screen Destination
         composable(Screen.CampaignList.route) {
             CampaignListScreen(navController = navController, firebaseManager = firebaseManager)
         }
 
-        // 5. Campaign Detail Screen Destination
         composable(
-            route = Screen.CampaignDetail.route, // Use the route with placeholder
+            route = Screen.CampaignDetail.route,
             arguments = listOf(androidx.navigation.navArgument("campaignId") {
                 type = androidx.navigation.NavType.StringType
             })
@@ -135,7 +132,6 @@ fun MyAppNavGraph(firebaseManager: FirebaseManager) {
                     campaignId = campaignId
                 )
             } else {
-                // Handle error or navigate back if campaignId is missing
                 Text(
                     "Error: Campaign ID missing",
                     modifier = Modifier.fillMaxSize(),
@@ -144,46 +140,43 @@ fun MyAppNavGraph(firebaseManager: FirebaseManager) {
             }
         }
 
-        // 6. Donation History Screen Destination
         composable(Screen.DonationHistory.route) {
-            DonationHistoryScreen(firebaseManager = firebaseManager,navController)
+            DonationHistoryScreen(firebaseManager = firebaseManager, navController)
         }
 
         composable(Screen.DonationSummary.route) {
-            DonationSummaryScreen(firebaseManager = firebaseManager,navController)
+            DonationSummaryScreen(firebaseManager = firebaseManager, navController)
+        }
+
+        composable(Screen.AboutUs.route) {
+            AboutUsScreen(navController)
+        }
+
+        composable(Screen.Profile.route) {
+            ProfileScreen(navController, firebaseManager)
         }
 
     }
 }
 
-/**
- * WelComeScreen is now refactored as SplashScreen.
- * It's responsible for displaying the splash and then navigating.
- */
+
 @Composable
 fun SplashScreen(navController: NavController) {
-    // No need for mutableStateOf 'showSplash' anymore, LaunchedEffect directly navigates
-    // No need for LocalContext as Activity for navigation
 
     val context = LocalContext.current as Activity
 
 
     LaunchedEffect(Unit) {
-        delay(3000) // Delay for 3 seconds
-        // Navigate to the Login screen
+        delay(3000)
 
-        val UserStatus = UserDetails.getUserLoginStatus(context)
-
-        if (UserStatus) {
+        if (DonorAccountData.getDonorLoginStatus(context)) {
             navController.navigate(AppDestinations.Home.route) {
-                // This pops up to the start destination (Splash) and removes it
                 popUpTo(AppDestinations.Splash.route) {
                     inclusive = true
                 }
             }
         } else {
             navController.navigate(AppDestinations.Login.route) {
-                // This pops up to the start destination (Splash) and removes it
                 popUpTo(AppDestinations.Splash.route) {
                     inclusive = true
                 }
@@ -193,10 +186,8 @@ fun SplashScreen(navController: NavController) {
 
     }
 
-    WelComeScreenDesign() // Your actual splash screen UI
+    WelComeScreenDesign()
 }
-
-
 
 
 @Composable
@@ -212,7 +203,6 @@ fun WelComeScreenDesign() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
 
 
             Image(
@@ -252,4 +242,16 @@ fun WelComeScreenDesign() {
 fun GreetingPreview() {
     CharityDonationTrackerTheme {
     }
+}
+
+sealed class Screen(val route: String) {
+    object CampaignList : Screen("campaign_list_route")
+    object CampaignDetail : Screen("campaign_detail_route/{campaignId}") {
+        fun createRoute(campaignId: String) = "campaign_detail_route/$campaignId"
+    }
+    object DonationHistory : Screen("donation_history_route")
+    object DonationSummary : Screen("donation_summary_route")
+    object AboutUs : Screen("about_us")
+    object Profile : Screen("profile")
+
 }
