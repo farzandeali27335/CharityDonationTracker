@@ -154,7 +154,7 @@ class FirebaseManager(private val activity: ComponentActivity, private val conte
 
 
     suspend fun addRealtimeDonation(donation: Donation): Result<Unit> {
-        val currentUserId = DonorAccountData.getDonorName(context = context)!!.replace(".",",")
+        val currentUserId = DonorAccountData.getDonorEmail(context = context)!!.replace(".",",")
 
         return try {
             val campaignDonationRef = realtimeDb.child("donations").child(donation.campaignId).push()
